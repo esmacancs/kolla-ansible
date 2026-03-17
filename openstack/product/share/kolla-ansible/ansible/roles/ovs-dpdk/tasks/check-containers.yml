@@ -1,0 +1,4 @@
+---
+- name: Check ovs-dpdk containers
+  import_role:
+    name: service-check-containers

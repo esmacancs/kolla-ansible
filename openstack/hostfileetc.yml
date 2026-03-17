@@ -1,0 +1,76 @@
+---
+- name: Clean and configure /etc/hosts on all nodes
+  hosts: all
+  become: yes
+
+  vars:
+    hosts_content: |
+      127.0.0.1 localhost
+
+      # ===============================
+      # Management/Internal Network (br-mgmt, VLAN 3407)
+      # ===============================
+      10.8.132.100  controller01.otech.local controller01
+      10.8.132.101  controller02.otech.local controller02
+      10.8.132.102  controller03.otech.local controller03
+      10.8.132.103  computehci01.otech.local computehci01
+      10.8.132.104  computehci02.otech.local computehci02
+      10.8.132.105  computehci03.otech.local computehci03
+
+      # ===============================
+      # API / br-api (VLAN 3410)
+      # ===============================
+      10.8.132.194  controller01-api.otech.local controller01-api
+      10.8.132.195  controller02-api.otech.local controller02-api
+      10.8.132.196  controller03-api.otech.local controller03-api
+      10.8.132.197  computehci01-api.otech.local computehci01-api
+      10.8.132.198  computehci02-api.otech.local computehci02-api
+      10.8.132.199  computehci03-api.otech.local computehci03-api
+
+      # ===============================
+      # Ceph Public Network (VLAN 3409)
+      # ===============================
+      10.8.132.165  controller01-ceph-public.otech.local controller01-ceph-public
+      10.8.132.166  controller02-ceph-public.otech.local controller02-ceph-public
+      10.8.132.167  controller03-ceph-public.otech.local controller03-ceph-public
+      10.8.132.162  computehci01-ceph-public.otech.local computehci01-ceph-public
+      10.8.132.163  computehci02-ceph-public.otech.local computehci02-ceph-public
+      10.8.132.164  computehci03-ceph-public.otech.local computehci03-ceph-public
+
+      # ===============================
+      # Ceph Cluster / Replication Network (VLAN 3408)
+      # ===============================
+      10.8.132.130  computehci01-ceph-cls.otech.local computehci01-ceph-cls
+      10.8.132.131  computehci02-ceph-cls.otech.local computehci02-ceph-cls
+      10.8.132.132  computehci03-ceph-cls.otech.local computehci03-ceph-cls
+
+      # ===============================
+      # VIPs (Keepalived)
+      # ===============================
+      10.8.132.125  internal.otech.local      # Internal VIP (br-mgmt)
+      10.8.132.126  public.otech.local        # External VIP (bond1.3411)
+
+  tasks:
+
+    - name: Backup existing hosts file
+      copy:
+        src: /etc/hosts
+        dest: /etc/hosts.backup_working
+        remote_src: yes
+        force: no
+
+          #    - name: Remove duplicate or old Kolla entries from /etc/hosts
+          #lineinfile:
+          #path: /etc/hosts
+          #regexp: '^10\.8\.132\.(19[4-9]|2[0-9]{1,2}) '
+          #state: absent
+          #ignore_errors: yes
+
+    - name: Deploy cleaned hosts file
+      copy:
+        dest: /etc/hosts
+        content: "{{ hosts_content }}"
+        owner: root
+        group: root
+        mode: '0644'
+

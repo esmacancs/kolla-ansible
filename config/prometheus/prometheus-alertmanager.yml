@@ -1,0 +1,18 @@
+---
+
+global:
+  resolve_timeout: 5m
+  smtp_require_tls: true
+  smtp_smarthost: mail.cri.epita.fr:587
+  smtp_from: openstack@cri.epita.fr
+
+route:
+  receiver: default-receiver
+  group_wait: 10s
+  group_interval: 5m
+  repeat_interval: 3h
+receivers:
+  - name: default-receiver
+    email_configs:
+      - to: csharma@otech.om
+templates: []

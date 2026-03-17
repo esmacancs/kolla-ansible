@@ -1,0 +1,4 @@
+---
+- name: Check iscsi containers
+  import_role:
+    name: service-check-containers

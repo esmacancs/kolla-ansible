@@ -1,0 +1,4 @@
+---
+- name: Check gnocchi containers
+  import_role:
+    name: service-check-containers

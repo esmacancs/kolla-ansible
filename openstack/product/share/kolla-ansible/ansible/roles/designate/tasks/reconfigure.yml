@@ -1,0 +1,3 @@
+---
+- name: Deploy designate
+  import_tasks: deploy.yml

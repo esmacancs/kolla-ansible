@@ -1,0 +1,108 @@
+lvextend -l +100%FREE /dev/ubuntu-vg-1/ubuntu-lv
+resize2fs /dev/ubuntu-vg-1/ubuntu-lv
+
+lvextend -l +100%FREE /dev/ubuntu-vg/ubuntu-lv
+resize2fs /dev/ubuntu-vg/ubuntu-lv
+
+pvs
+vgs
+lsblk
+
+vgremove -y ceph-*
+vgremove -y ubuntu-vg
+
+pvremove /dev/sdb
+pvremove /dev/sdc3
+pvremove /dev/sdd
+pvremove /dev/sde
+pvremove /dev/sdf
+pvremove /dev/sdg
+pvremove /dev/sdh
+pvremove /dev/sdi
+
+
+lvremove -y $(lvs --noheadings -o lv_path | grep ceph)
+vgremove -y ceph-*
+pvremove /dev/sdb /dev/sdc /dev/sdd /dev/sde /dev/sdf \
+         /dev/sdg /dev/sdi /dev/sdj /dev/sdl /dev/sdm \
+         /dev/sdn /dev/sdo /dev/sdp /dev/sdq /dev/sdr \
+         /dev/sds /dev/sdt /dev/sdu /dev/sdv
+for disk in sdb sdc sdd sde sdf sdg sdi sdj sdl sdm sdn sdo sdp sdq sdr sds sdt sdu sdv; do
+  wipefs -a /dev/$disk
+done
+
+vgs
+pvs
+lsblk
+
+
+root@bbb:~# useradd -m kolla
+root@bbb:~# passwd kolla
+New password: Sarma@1234
+Retype new password:
+passwd: password updated successfully
+root@bbb:~#
+
+
+Create kolla User
+sudo useradd -m -s /bin/bash kolla
+
+Set password:
+
+sudo passwd kolla
+✅ 2️⃣ Configure Sudo (WITH password prompt)
+
+Open sudoers safely:
+
+sudo visudo
+
+Add this line:
+
+kolla ALL=(ALL) ALL
+
+⚠️ This means:
+
+User must enter password
+
+Not passwordless
+
+Secure default behavior
+
+❌ Do NOT use this (passwordless)
+kolla ALL=(ALL) NOPASSWD: ALL
+
+Since you said you want password required.
+
+✅ 3️⃣ Setup SSH Key for Kolla (for Kolla-Ansible)
+
+Switch to kolla user:
+
+sudo su - kolla
+
+Generate SSH key:
+
+ssh-keygen -t rsa -b 4096
+
+Press Enter for all defaults.
+
+This creates:
+
+~/.ssh/id_rsa
+~/.ssh/id_rsa.pub
+✅ 4️⃣ Copy SSH Key to All OpenStack Nodes
+
+From control node (as kolla):
+
+ssh-copy-id kolla@node1
+ssh-copy-id kolla@node2
+ssh-copy-id kolla@node3
+
+
+10.8.132.100 controller01
+10.8.132.101 controller02
+10.8.132.102 controller03
+10.8.132.103 computehci01
+10.8.132.104 computehci02
+10.8.132.105 computehci03
+
+sudo timedatectl set-timezone Asia/Muscat

@@ -1,0 +1,3 @@
+---
+- name: Deploy barbican
+  import_tasks: deploy.yml

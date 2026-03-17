@@ -1,0 +1,4 @@
+---
+- name: Check nova containers
+  import_role:
+    name: service-check-containers

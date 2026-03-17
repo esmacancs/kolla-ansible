@@ -1,0 +1,137 @@
+---
+# TODO(mnasiadka): Remove this task after Gazpacho/2026.1 release
+- name: Remove ironic-inspector
+  become: true
+  kolla_container:
+    action: "stop_and_remove_container"
+    common_options: "{{ docker_common_options }}"
+    name: "ironic_inspector"
+    ignore_missing: true
+
+- name: Get container volume facts
+  become: true
+  kolla_container_facts:
+    container_engine: "{{ kolla_container_engine }}"
+    action: get_volumes
+    name:
+      - ironic_dhcp_hosts
+      - ironic_inspector_dhcp_hosts
+  check_mode: false
+  register: container_volume_facts
+
+# TODO(mnasiadka): Remove this block after Gazpacho/2026.1 release
+- name: Handle volume migration for ironic_dnsmasq
+  when:
+    - enable_ironic_dnsmasq | bool
+  block:
+    - name: Stop ironic_dnsmasq container
+      become: true
+      kolla_container:
+        action: "stop_container"
+        common_options: "{{ docker_common_options }}"
+        name: "ironic_dnsmasq"
+        ignore_missing: true
+
+    - name: Create ironic_dhcp_hosts volume
+      become: true
+      changed_when: true
+      command: "{{ kolla_container_engine }} volume create ironic_dhcp_hosts"
+      when: container_volume_facts.volumes['ironic_dhcp_hosts'] is not defined
+
+    - name: Migrate data from ironic_inspector_dhcp_hosts volume
+      become: true
+      changed_when: true
+      vars:
+        volumes_dir: >-
+          {{ '/var/lib/docker/volumes' if kolla_container_engine == 'docker'
+          else '/var/lib/containers/storage/volumes' }}
+      command: >-
+        mv {{ volumes_dir }}/ironic_inspector_dhcp_hosts/_data/
+        {{ volumes_dir }}/ironic_dhcp_hosts/_data
+      when: container_volume_facts.volumes['ironic_inspector_dhcp_hosts'] is defined
+
+- name: Get Ironic API container facts
+  become: true
+  vars:
+    container_name: "{{ ironic_services['ironic-api'].container_name }}"
+  kolla_container_facts:
+    action: get_containers
+    container_engine: "{{ kolla_container_engine }}"
+    name:
+      - "{{ container_name }}"
+  check_mode: false
+  register: container_facts
+
+- name: Wait for Ironic nodes not to wait
+  become: true
+  vars:
+    container_name: "{{ ironic_services['ironic-api'].container_name }}"
+  command: >
+    {{ kolla_container_engine }} exec kolla_toolbox openstack
+    --os-interface {{ openstack_interface }}
+    --os-auth-url {{ openstack_auth.auth_url }}
+    --os-username {{ openstack_auth.username }}
+    --os-password {{ openstack_auth.password }}
+    --os-identity-api-version 3
+    --os-user-domain-name {{ openstack_auth.user_domain_name }}
+    --os-system-scope "all"
+    --os-region-name {{ openstack_region_name }}
+    {% if openstack_cacert != '' %}--os-cacert {{ openstack_cacert }}{% endif %}
+    baremetal node list --format json --column "Provisioning State"
+  register: ironic_nodes
+  changed_when: false
+  retries: 10
+  delay: 30
+  until:
+    - ironic_nodes is success
+    - (ironic_nodes.stdout |
+       from_json |
+       map(attribute='Provisioning State') |
+       select('search', '\\bwait\\b') |
+       length) == 0
+  run_once: true
+  when:
+    - not ironic_upgrade_skip_wait_check | bool
+    - container_facts.containers[container_name] is defined
+
+- name: Import tasks from config.yml
+  import_tasks: config.yml
+
+- name: Import tasks from check-containers.yml
+  import_tasks: check-containers.yml
+
+- name: Import tasks from bootstrap_service.yml
+  import_tasks: bootstrap_service.yml
+
+- name: Flush handlers
+  meta: flush_handlers
+
+- name: Running Ironic online data migration
+  vars:
+    ironic_api: "{{ ironic_services['ironic-api'] }}"
+  become: true
+  kolla_container:
+    action: "start_container"
+    common_options: "{{ docker_common_options }}"
+    detach: false
+    environment:
+      KOLLA_OSM:
+      KOLLA_CONFIG_STRATEGY: "{{ config_strategy }}"
+    image: "{{ ironic_api.image }}"
+    labels:
+      BOOTSTRAP:
+    name: "bootstrap_ironic"
+    restart_policy: oneshot
+    volumes: "{{ ironic_api.volumes }}"
+  run_once: true
+  delegate_to: "{{ groups[ironic_api.group][0] }}"
+  when: inventory_hostname in groups[ironic_api.group]
+
+# TODO(mnasiadka): Remove this task in Gazpacho/2026.1 release
+- name: Remove ironic_inspector_dhcp_hosts volume
+  become: true
+  changed_when: true
+  command: "{{ kolla_container_engine }} volume rm ironic_inspector_dhcp_hosts"
+  when:
+    - enable_ironic_dnsmasq | bool
+    - container_volume_facts.volumes['ironic_inspector_dhcp_hosts'] is defined

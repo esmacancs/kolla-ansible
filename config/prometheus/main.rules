@@ -1,0 +1,89 @@
+groups:
+  - name: system
+    rules:
+        # Last prometheus config reload failed
+      - alert: PrometheusConfigurationReloadFailure
+        expr: "prometheus_config_last_reload_successful != 1"
+        labels:
+          severity: warning
+        annotations:
+          summary: Prometheus configuration reload failure (instance {{ $labels.instance }})
+          description: "Prometheus configuration reload error\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+        # Target is down
+      - alert: TargetDown
+        expr: 'up == 0'
+        for: 30s
+        annotations:
+          title: 'Target {{ $labels.instance }} is down'
+          description: '{{ $labels.instance }} of job {{ $labels.job }} has been down for more than 30 seconds.'
+
+  - name: baremetal
+    rules:
+        # Node memory is filling up (< 5% left)
+      - alert: HostOutOfMemory
+        expr: node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes * 100 < 5
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: Host out of memory (instance {{ $labels.instance }})
+          description: "Node memory is filling up (< 5% left)\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+        # Swap is filling up (> 80%)
+      - alert: HostSwapIsFillingUp
+        expr: (1 - (node_memory_SwapFree_bytes / node_memory_SwapTotal_bytes)) * 100 > 80
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: Host swap is filling up (instance {{ $labels.instance }})
+          description: "Swap is filling up (> 80%)\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+        # Host OOM kill detected
+      - alert: HostOomKillDetected
+        expr: increase(node_vmstat_oom_kill[1m]) > 0
+        labels:
+          severity: warning
+        annotations:
+          summary: Host OOM kill detected (instance {{ $labels.instance }})
+          description: "OOM kill detected\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+        # Host out of disk space
+      - alert: HostOutOfDiskSpace
+        expr: (node_filesystem_avail_bytes{mountpoint!~"/run.*|",mountpoint!="/boot"} * 100) / node_filesystem_size_bytes < 15 and ON (instance, device, mountpoint) node_filesystem_readonly == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: Host out of disk space (instance {{ $labels.instance }})
+          description: "Disk is almost full (< 15% left)\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+  - name: mysql_rabbitmq
+    rules:
+        # MySQL instance is down
+      - alert: MysqlDown
+        expr: mysql_up == 0
+        labels:
+          severity: critical
+        annotations:
+          summary: MySQL down (instance {{ $labels.instance }})
+          description: "MySQL instance is down on {{ $labels.instance }}\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+        # MySQL restarted
+      - alert: MysqlRestarted
+        expr: mysql_global_status_uptime < 60
+        labels:
+          severity: info
+        annotations:
+          summary: MySQL restarted (instance {{ $labels.instance }})
+          description: "MySQL has just been restarted, less than one minute ago on {{ $labels.instance }}.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+        # RabbitMQ instance down
+      - alert: RabbitmqNodeDown
+        expr: sum(rabbitmq_build_info) < count(time() - container_last_seen{image=~".*rabbitmq.*", name="rabbitmq"} < 604800)  # Compares the number of online RabbitMQ instances to the number of RabbitMQ containers seen in last 7 days
+        labels:
+          severity: critical
+        annotations:
+          summary: Rabbitmq node down (instance {{ $labels.instance }})
+          description: "Less than 5 nodes running in RabbitMQ cluster\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"

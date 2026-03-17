@@ -1,0 +1,3 @@
+---
+- name: Check gnocchi containers
+  import_tasks: check-containers.yml

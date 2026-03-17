@@ -1,0 +1,3 @@
+---
+- name: Deploy mariadb
+  import_tasks: deploy.yml

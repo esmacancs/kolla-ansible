@@ -1,0 +1,26 @@
+groups:
+  - name: haproxy
+    rules:
+      - alert: HAProxyErrorResponse
+        expr: |
+          irate(haproxy_server_response_errors_total[5m]) > 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "[`{{ $labels.server }}`] {{ $labels.backend }} is returning errors"
+          description: >
+            Service `{{ $labels.backend }}` on `{{ $labels.server }}` has been
+            returning errors for more than a minute.
+
+      - alert: HAProxyBackendFailure
+        expr: |
+          irate(haproxy_server_check_failures_total[5m]) > 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "[`{{ $labels.server }}`] {{ $labels.backend }} is failing HAProxy checks"
+          description: >
+            Service `{{ $labels.backend }}` on `{{ $labels.server }}` has been
+            failing HAProxy checks for more than a minute.

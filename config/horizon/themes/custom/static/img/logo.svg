@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 60" width="200" height="60">
+  <defs>
+    <linearGradient id="otechGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1e3c72;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#2a5298;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="accentGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ff6b35;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#f7931e;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Cloud Shape -->
+  <path d="M30 35 C20 35, 15 40, 15 45 C15 50, 20 55, 25 55 L175 55 C180 55, 185 50, 185 45 C185 40, 180 35, 175 35 C175 25, 165 15, 155 15 C145 15, 135 20, 130 25 C125 15, 115 10, 105 10 C95 10, 85 15, 80 25 C75 20, 65 15, 55 15 C45 15, 35 20, 30 30 C25 30, 20 32, 20 35 Z" fill="url(#otechGradient)" opacity="0.9"/>
+  
+  <!-- OTECH Text -->
+  <text x="100" y="40" font-family="Montserrat, sans-serif" font-size="24" font-weight="700" text-anchor="middle" fill="url(#accentGradient)">OTECH</text>
+  
+  <!-- Cloud Icon -->
+  <circle cx="25" cy="25" r="3" fill="#ff6b35" opacity="0.8"/>
+  <circle cx="35" cy="20" r="4" fill="#ff6b35" opacity="0.6"/>
+  <circle cx="30" cy="15" r="3" fill="#ff6b35" opacity="0.7"/>
+  <circle cx="40" cy="25" r="3" fill="#ff6b35" opacity="0.5"/>
+  
+  <!-- Subtitle -->
+  <text x="100" y="52" font-family="Montserrat, sans-serif" font-size="8" font-weight="400" text-anchor="middle" fill="#2c3e50">CLOUD DASHBOARD</text>
+</svg>

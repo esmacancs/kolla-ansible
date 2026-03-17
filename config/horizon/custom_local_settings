@@ -1,0 +1,74 @@
+# -*- coding: utf-8 -*-
+"""
+OTECH Cloud Horizon Custom Branding Configuration
+Kolla-Ansible Override Configuration
+"""
+
+# Site Branding
+SITE_BRANDING = "OTECH Cloud Dashboard"
+SITE_BRANDING_LINK = "https://otech.local"
+
+# Custom Theme Configuration
+AVAILABLE_THEMES = [
+    ('default', 'Default', 'themes/default'),
+    ('custom', 'OTECH Theme', 'themes/custom'),
+]
+DEFAULT_THEME = 'custom'
+
+# Session and Security Settings
+SESSION_TIMEOUT = 7200
+SESSION_COOKIE_SECURE = True
+SESSION_COOKIE_HTTPONLY = True
+CSRF_COOKIE_SECURE = True
+CSRF_COOKIE_HTTPONLY = True
+
+# Multi-domain Support
+OPENSTACK_KEYSTONE_MULTIDOMAIN_SUPPORT = True
+OPENSTACK_KEYSTONE_DEFAULT_DOMAIN = 'Default'
+
+# API Settings
+OPENSTACK_API_VERSIONS = {
+    "identity": 3,
+    "volume": 3,
+    "compute": 2,
+    "network": 2,
+    "image": 2,
+}
+
+# Password Settings
+PASSWORD_REGEX = "^(?=.*[A-Z])(?=.*\\d).+$"
+PASSWORD_VALIDATORS = [
+    {
+        'regex': PASSWORD_REGEX,
+        'error_message': "Password must contain at least one uppercase letter and one number."
+    },
+]
+
+# Dashboard Settings
+HORIZON_CONFIG = {
+    'dashboards': ('project', 'admin', 'identity', 'router', 'settings'),
+    'default_dashboard': 'project',
+    'user_home': 'project.instances',
+    'help_url': "https://docs.openstack.org/horizon/latest/",
+    'exceptions': {'recoverable': True, 'not_found': True},
+}
+
+# Performance Settings
+COMPRESS_OFFLINE = True
+COMPRESS_CACHE_KEY_PREFIX = 'horizon'
+COMPRESS_CACHE_BACKEND = 'default'
+
+# Security Headers
+SECURE_BROWSER_XSS_FILTER = True
+SECURE_CONTENT_TYPE_NOSNIFF = True
+X_FRAME_OPTIONS = 'DENY'
+X_XSS_PROTECTION = '1; mode=block'
+
+# Custom Settings
+OTECH_CLOUD_SETTINGS = {
+    'company_name': 'OTECH Solutions',
+    'support_email': 'support@otech.local',
+    'documentation_url': 'https://docs.otech.local',
+    'api_docs_url': 'https://api.otech.local/docs',
+    'status_page_url': 'https://status.otech.local',
+}

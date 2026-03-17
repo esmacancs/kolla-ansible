@@ -1,0 +1,59 @@
+network:
+  version: 2
+  renderer: networkd
+
+  ethernets:
+    ens10f0np0: { dhcp4: no, mtu: 9000 }
+    ens10f1np1: { dhcp4: no, mtu: 9000 }
+    ens11f0np0: { dhcp4: no, mtu: 9000 }
+    ens11f1np1: { dhcp4: no, mtu: 9000 }
+
+  bonds:
+    bond0:
+      interfaces: [ens10f0np0, ens10f1np1]
+      parameters:
+        mode: 802.3ad
+        lacp-rate: fast
+        mii-monitor-interval: 100
+        transmit-hash-policy: layer3+4
+      mtu: 9000
+
+    bond1:
+      interfaces: [ens11f0np0, ens11f1np1]
+      parameters:
+        mode: 802.3ad
+        lacp-rate: fast
+        mii-monitor-interval: 100
+        transmit-hash-policy: layer3+4
+      mtu: 9000
+
+  vlans:
+    bond0.3407: { id: 3407, link: bond0 }
+    bond0.3410: { id: 3410, link: bond0 }
+    bond1.3411: { id: 3411, link: bond1 }
+    bond1.3408:
+      id: 3408
+      link: bond1
+      addresses: [10.8.132.130/27]   # Ceph cluster IP (change per node)
+
+    bond1.3409:
+      id: 3409
+      link: bond1
+      addresses: [10.8.132.162/27]   # Ceph public IP (change per node)
+
+
+  bridges:
+    br-mgmt:
+      interfaces: [bond0.3407]
+      addresses: [10.8.132.103/27]   # change per compute
+      routes:
+        - to: default
+          via: 10.8.132.97
+      nameservers:
+        addresses: [8.8.8.8]
+      mtu: 9000
+
+    br-api:
+      interfaces: [bond0.3410]
+      addresses: [10.8.132.197/27]   # change per compute
+      mtu: 9000

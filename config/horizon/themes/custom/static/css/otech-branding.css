@@ -1,0 +1,533 @@
+/* -*- coding: utf-8 -*-
+ * OTECH Cloud Horizon Custom Branding CSS
+ * Modern gradient design with enhanced UX
+ */
+
+/* =============================================
+   GLOBAL OTECH BRANDING
+   ============================================= */
+
+:root {
+    --otech-primary: #ff6b35;
+    --otech-secondary: #2a5298;
+    --otech-accent: #3498db;
+    --otech-success: #27ae60;
+    --otech-warning: #f39c12;
+    --otech-danger: #e74c3c;
+    --otech-info: #3498db;
+    --otech-light: #ecf0f1;
+    --otech-dark: #2c3e50;
+    --otech-gradient-primary: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+    --otech-gradient-secondary: linear-gradient(180deg, #2c3e50 0%, #34495e 100%);
+    --otech-gradient-accent: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+    --otech-gradient-success: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+    --otech-gradient-warning: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+    --otech-gradient-danger: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+    --otech-border-radius: 8px;
+    --otech-box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    --otech-transition: all 0.3s ease;
+}
+
+/* =============================================
+   NAVIGATION BAR
+   ============================================= */
+
+.navbar {
+    background: var(--otech-gradient-primary) !important;
+    border-bottom: 3px solid var(--otech-primary) !important;
+    box-shadow: var(--otech-box-shadow);
+    min-height: 60px;
+}
+
+.navbar-brand {
+    color: #ffffff !important;
+    font-weight: 600;
+    font-size: 18px;
+    font-family: 'Montserrat', sans-serif;
+    transition: var(--otech-transition);
+}
+
+.navbar-brand:hover {
+    color: var(--otech-primary) !important;
+    transform: translateY(-1px);
+}
+
+.navbar-nav > li > a {
+    color: #ffffff !important;
+    font-weight: 500;
+    transition: var(--otech-transition);
+}
+
+.navbar-nav > li > a:hover {
+    color: var(--otech-primary) !important;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* =============================================
+   SIDEBAR NAVIGATION
+   ============================================= */
+
+.sidebar {
+    background: var(--otech-gradient-secondary) !important;
+    box-shadow: var(--otech-box-shadow);
+}
+
+.sidebar .nav > li > a {
+    color: var(--otech-light) !important;
+    border-radius: var(--otech-border-radius);
+    margin: 2px 10px;
+    transition: var(--otech-transition);
+    font-weight: 500;
+}
+
+.sidebar .nav > li > a:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffffff !important;
+    transform: translateX(3px);
+}
+
+.sidebar .nav > li.active > a {
+    background: var(--otech-primary) !important;
+    color: #ffffff !important;
+    box-shadow: var(--otech-box-shadow);
+}
+
+/* =============================================
+   BUTTONS
+   ============================================= */
+
+.btn-primary {
+    background: var(--otech-primary) !important;
+    border-color: var(--otech-primary) !important;
+    color: #ffffff !important;
+    font-weight: 600;
+    border-radius: var(--otech-border-radius);
+    transition: var(--otech-transition);
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+    background: #e55a2b !important;
+    border-color: #e55a2b !important;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 107, 53, 0.3);
+}
+
+.btn-success {
+    background: var(--otech-success) !important;
+    border-color: var(--otech-success) !important;
+}
+
+.btn-warning {
+    background: var(--otech-warning) !important;
+    border-color: var(--otech-warning) !important;
+}
+
+.btn-danger {
+    background: var(--otech-danger) !important;
+    border-color: var(--otech-danger) !important;
+}
+
+/* =============================================
+   PAGE HEADERS
+   ============================================= */
+
+.page-header {
+    border-bottom: 2px solid var(--otech-primary) !important;
+    color: var(--otech-dark) !important;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+}
+
+.page-header h1,
+.page-header h2,
+.page-header h3 {
+    color: var(--otech-dark) !important;
+    font-weight: 600;
+}
+
+/* =============================================
+   TABLES
+   ============================================= */
+
+.table {
+    border-radius: var(--otech-border-radius);
+    overflow: hidden;
+    box-shadow: var(--otech-box-shadow);
+}
+
+.table th {
+    background: var(--otech-dark) !important;
+    color: #ffffff !important;
+    border-color: var(--otech-dark) !important;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 12px;
+    letter-spacing: 0.5px;
+}
+
+.table td {
+    border-color: #e0e0e0 !important;
+    vertical-align: middle;
+}
+
+.table-hover tbody tr:hover {
+    background: rgba(52, 152, 219, 0.1) !important;
+}
+
+/* =============================================
+   LOGIN PAGE
+   ============================================= */
+
+.login {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.login .panel {
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    border: none;
+    overflow: hidden;
+}
+
+.login .panel-heading {
+    background: var(--otech-gradient-primary) !important;
+    color: #ffffff !important;
+    border-radius: 10px 10px 0 0;
+    text-align: center;
+    font-weight: 600;
+    font-size: 18px;
+}
+
+.login .panel-body {
+    padding: 30px;
+}
+
+.login .form-control {
+    border-radius: var(--otech-border-radius);
+    border: 2px solid #e0e0e0;
+    transition: var(--otech-transition);
+}
+
+.login .form-control:focus {
+    border-color: var(--otech-primary) !important;
+    box-shadow: 0 0 8px rgba(255, 107, 53, 0.3) !important;
+}
+
+/* =============================================
+   FOOTER
+   ============================================= */
+
+.footer {
+    background: var(--otech-dark) !important;
+    color: var(--otech-light) !important;
+    border-top: 3px solid var(--otech-primary) !important;
+    padding: 20px 0;
+    margin-top: 40px;
+}
+
+.footer a {
+    color: var(--otech-primary) !important;
+    text-decoration: none;
+    transition: var(--otech-transition);
+}
+
+.footer a:hover {
+    color: #ffffff !important;
+    text-decoration: underline;
+}
+
+/* =============================================
+   DASHBOARD CARDS
+   ============================================= */
+
+.dashboard .panel {
+    border-radius: var(--otech-border-radius);
+    box-shadow: var(--otech-box-shadow);
+    border: 1px solid #e0e0e0;
+    transition: var(--otech-transition);
+    overflow: hidden;
+}
+
+.dashboard .panel:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+.dashboard .panel-heading {
+    background: var(--otech-gradient-accent) !important;
+    color: #ffffff !important;
+    border-radius: var(--otech-border-radius) var(--otech-border-radius) 0 0;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 14px;
+    letter-spacing: 0.5px;
+}
+
+.dashboard .panel-body {
+    padding: 20px;
+}
+
+/* =============================================
+   PROGRESS BARS
+   ============================================= */
+
+.progress-bar {
+    background: linear-gradient(90deg, var(--otech-primary) 0%, #f7931e 100%) !important;
+    border-radius: var(--otech-border-radius);
+}
+
+.progress {
+    background: #f0f0f0;
+    border-radius: var(--otech-border-radius);
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* =============================================
+   ALERTS
+   ============================================= */
+
+.alert-info {
+    background: var(--otech-gradient-accent) !important;
+    border-color: #2980b9 !important;
+    color: #ffffff !important;
+    border-radius: var(--otech-border-radius);
+    font-weight: 500;
+}
+
+.alert-success {
+    background: var(--otech-gradient-success) !important;
+    border-color: #229954 !important;
+    color: #ffffff !important;
+    border-radius: var(--otech-border-radius);
+    font-weight: 500;
+}
+
+.alert-warning {
+    background: var(--otech-gradient-warning) !important;
+    border-color: #e67e22 !important;
+    color: #ffffff !important;
+    border-radius: var(--otech-border-radius);
+    font-weight: 500;
+}
+
+.alert-danger {
+    background: var(--otech-gradient-danger) !important;
+    border-color: #c0392b !important;
+    color: #ffffff !important;
+    border-radius: var(--otech-border-radius);
+    font-weight: 500;
+}
+
+/* =============================================
+   NAVIGATION TABS
+   ============================================= */
+
+.nav-tabs > li.active > a {
+    background: var(--otech-primary) !important;
+    color: #ffffff !important;
+    border-color: var(--otech-primary) !important;
+    border-radius: var(--otech-border-radius) var(--otech-border-radius) 0 0;
+}
+
+.nav-tabs > li > a {
+    border-radius: var(--otech-border-radius);
+    transition: var(--otech-transition);
+}
+
+.nav-tabs > li > a:hover {
+    background: rgba(255, 107, 53, 0.1);
+    border-color: var(--otech-primary);
+}
+
+/* =============================================
+   FORM ELEMENTS
+   ============================================= */
+
+.form-control {
+    border-radius: var(--otech-border-radius);
+    border: 2px solid #e0e0e0;
+    transition: var(--otech-transition);
+}
+
+.form-control:focus {
+    border-color: var(--otech-primary) !important;
+    box-shadow: 0 0 8px rgba(255, 107, 53, 0.3) !important;
+}
+
+.form-group label {
+    font-weight: 600;
+    color: var(--otech-dark);
+}
+
+/* =============================================
+   LOADING SPINNER
+   ============================================= */
+
+.loading-spinner {
+    border: 3px solid #f0f0f0;
+    border-top: 3px solid var(--otech-primary);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin: 20px auto;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.loading-indicator {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+}
+
+/* =============================================
+   MODALS
+   ============================================= */
+
+.modal-content {
+    border-radius: var(--otech-border-radius);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    border: none;
+}
+
+.modal-header {
+    background: var(--otech-gradient-primary);
+    color: #ffffff;
+    border-radius: var(--otech-border-radius) var(--otech-border-radius) 0 0;
+}
+
+.modal-title {
+    color: #ffffff;
+    font-weight: 600;
+}
+
+/* =============================================
+   RESPONSIVE DESIGN
+   ============================================= */
+
+@media (max-width: 768px) {
+    .navbar-brand {
+        font-size: 16px;
+    }
+    
+    .sidebar {
+        background: var(--otech-dark) !important;
+    }
+    
+    .dashboard .panel {
+        margin-bottom: 20px;
+    }
+    
+    .login .panel {
+        margin: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .navbar-brand {
+        font-size: 14px;
+    }
+    
+    .btn {
+        margin-bottom: 10px;
+    }
+    
+    .table-responsive {
+        border: none;
+    }
+}
+
+/* =============================================
+   DARK MODE SUPPORT
+   ============================================= */
+
+@media (prefers-color-scheme: dark) {
+    body {
+        background: #1a1a1a !important;
+        color: var(--otech-light) !important;
+    }
+    
+    .panel {
+        background: var(--otech-dark) !important;
+        color: var(--otech-light) !important;
+        border-color: #34495e !important;
+    }
+    
+    .panel-heading {
+        background: #34495e !important;
+        color: var(--otech-light) !important;
+    }
+    
+    .table {
+        background: var(--otech-dark) !important;
+        color: var(--otech-light) !important;
+    }
+    
+    .form-control {
+        background: #34495e !important;
+        color: var(--otech-light) !important;
+        border-color: #2c3e50 !important;
+    }
+}
+
+/* =============================================
+   ANIMATIONS
+   ============================================= */
+
+.fade-in {
+    animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.slide-in {
+    animation: slideIn 0.5s ease-out;
+}
+
+@keyframes slideIn {
+    from { transform: translateX(-100%); }
+    to { transform: translateX(0); }
+}
+
+/* =============================================
+   UTILITY CLASSES
+   ============================================= */
+
+.otech-gradient-text {
+    background: var(--otech-gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: 700;
+}
+
+.otech-shadow {
+    box-shadow: var(--otech-box-shadow);
+}
+
+.otech-rounded {
+    border-radius: var(--otech-border-radius);
+}
+
+.otech-transition {
+    transition: var(--otech-transition);
+}

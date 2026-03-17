@@ -1,0 +1,3 @@
+---
+- name: Check cloudkitty containers
+  import_tasks: check-containers.yml

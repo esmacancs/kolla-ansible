@@ -1,0 +1,23 @@
+lvextend -l +100%FREE /dev/ubuntu-vg-1/ubuntu-lv
+resize2fs /dev/ubuntu-vg-1/ubuntu-lv
+
+lvextend -l +100%FREE /dev/ubuntu-vg/ubuntu-lv
+resize2fs /dev/ubuntu-vg/ubuntu-lv
+
+pvs
+vgs
+lsblk
+
+vgremove -y ceph-*
+vgremove -y ubuntu-vg
+
+pvremove /dev/sdb
+pvremove /dev/sdc3
+pvremove /dev/sdd
+pvremove /dev/sde
+pvremove /dev/sdf
+pvremove /dev/sdg
+pvremove /dev/sdh
+pvremove /dev/sdi
+
+

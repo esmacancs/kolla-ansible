@@ -1,0 +1,92 @@
+---
+- name: Clean and configure /etc/hosts on all nodes
+  hosts: all
+  become: yes
+
+  vars:
+    hosts_content: |
+      127.0.0.1 localhost
+
+      # IPv6 entries
+      ::1     ip6-localhost ip6-loopback
+      fe00::0 ip6-localnet
+      ff00::0 ip6-mcastprefix
+      ff02::1 ip6-allnodes
+      ff02::2 ip6-allrouters
+
+      # ===============================
+      # Management / Internal Network
+      # ===============================
+      10.8.132.100 controller01.internal.otech.local controller01.internal
+      10.8.132.101 controller02.internal.otech.local controller02.internal
+      10.8.132.102 controller03.internal.otech.local controller03.internal
+      10.8.132.103 computehci01.internal.otech.local computehci01.internal
+      10.8.132.104 computehci02.internal.otech.local computehci02.internal
+      10.8.132.105 computehci03.internal.otech.local computehci03.internal
+
+      # ===============================
+      # Public / API Network
+      # ===============================
+      10.8.132.162 computehci01.public.otech.local computehci01.public
+      10.8.132.163 computehci02.public.otech.local computehci02.public
+      10.8.132.164 computehci03.public.otech.local computehci03.public
+      10.8.132.165 controller01.public.otech.local controller01.public
+      10.8.132.166 controller02.public.otech.local controller02.public
+      10.8.132.167 controller03.public.otech.local controller03.public
+
+      # ===============================
+      # Service Network
+      # ===============================
+      10.8.132.194 controller01.service.otech.local controller01.service
+      10.8.132.195 controller02.service.otech.local controller02.service
+      10.8.132.196 controller03.service.otech.local controller03.service
+      10.8.132.197 computehci01.service.otech.local computehci01.service
+      10.8.132.198 computehci02.service.otech.local computehci02.service
+      10.8.132.199 computehci03.service.otech.local computehci03.service
+
+      # ===============================
+      # Ceph Public Network (RBD / API)
+      # ===============================
+      10.8.132.162 computehci01.ceph-public.otech.local computehci01.ceph-public
+      10.8.132.163 computehci02.ceph-public.otech.local computehci02.ceph-public
+      10.8.132.164 computehci03.ceph-public.otech.local computehci03.ceph-public
+      10.8.132.165 controller01.ceph-public.otech.local controller01.ceph-public
+      10.8.132.166 controller02.ceph-public.otech.local controller02.ceph-public
+      10.8.132.167 controller03.ceph-public.otech.local controller03.ceph-public
+
+      # ===============================
+      # Ceph Cluster Network (Replication)
+      # ===============================
+      10.8.132.130 computehci01.ceph-cls.otech.local computehci01.ceph-cls computehci01
+      10.8.132.131 computehci02.ceph-cls.otech.local computehci02.ceph-cls computehci02
+      10.8.132.132 computehci03.ceph-cls.otech.local computehci03.ceph-cls computehci03
+
+      # ===============================
+      # Virtual IPs
+      # ===============================
+      10.8.132.210 internal.otech.local
+      10.8.132.200 public.otech.local
+
+  tasks:
+
+    - name: Backup existing hosts file
+      copy:
+        src: /etc/hosts
+        dest: /etc/hosts.backup2
+        remote_src: yes
+        force: no
+
+    - name: Remove duplicate or old Kolla entries from /etc/hosts
+      lineinfile:
+        path: /etc/hosts
+        regexp: '^10\.8\.132\.(19[4-9]|2[0-9]{1,2}) '
+        state: absent
+      ignore_errors: yes
+
+    - name: Deploy cleaned hosts file
+      copy:
+        dest: /etc/hosts
+        content: "{{ hosts_content }}"
+        owner: root
+        group: root
+        mode: '0644'

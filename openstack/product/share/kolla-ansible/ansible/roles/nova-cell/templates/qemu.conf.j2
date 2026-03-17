@@ -1,0 +1,12 @@
+stdio_handler = "file"
+
+user = "nova"
+group = "nova"
+
+max_files =  {{ qemu_max_files }}
+max_processes =  {{ qemu_max_processes }}
+
+{% if enable_nova_swtpm | bool %}
+swtpm_user = "{{ swtpm_user }}"
+swtpm_group = "{{ swtpm_group }}"
+{% endif %}

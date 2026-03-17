@@ -1,0 +1,132 @@
+---
+- name: Ensuring config directories exist
+  file:
+    path: "{{ node_config_directory }}/{{ item.key }}"
+    state: "directory"
+    owner: "{{ config_owner_user }}"
+    group: "{{ config_owner_group }}"
+    mode: "0770"
+  become: true
+  with_dict: "{{ glance_services | select_services_enabled_and_mapped_to_host }}"
+
+- name: Include tasks from external_ceph.yml
+  include_tasks: external_ceph.yml
+  when:
+    - glance_backend_ceph | bool
+
+- name: Check if policies shall be overwritten
+  stat:
+    path: "{{ item }}"
+  delegate_to: localhost
+  run_once: true
+  register: glance_policy
+  with_first_found:
+    - files: "{{ supported_policy_format_list }}"
+      paths:
+        - "{{ node_custom_config }}/glance/"
+      skip: true
+
+- name: Set glance policy file
+  set_fact:
+    glance_policy_file: "{{ glance_policy.results.0.stat.path | basename }}"
+    glance_policy_file_path: "{{ glance_policy.results.0.stat.path }}"
+  when:
+    - glance_policy.results | length > 0
+
+- name: Copying over TLS certificates
+  include_tasks: copy-certs.yml
+  when:
+    - glance_copy_certs | bool
+
+- name: Copying over config.json files for services
+  template:
+    src: "{{ item.key }}.json.j2"
+    dest: "{{ node_config_directory }}/{{ item.key }}/config.json"
+    mode: "0660"
+  become: true
+  with_dict: "{{ glance_services | select_services_enabled_and_mapped_to_host }}"
+
+- name: "Configure uWSGI for Glance"
+  include_role:
+    name: service-uwsgi-config
+  vars:
+    project_services: "{{ glance_services }}"
+    service: "{{ glance_services['glance-api'] }}"
+    service_name: "glance-api"
+    service_uwsgi_config_http_port: "{{ glance_api_listen_port }}"
+    service_uwsgi_config_log_file_chmod: "644"
+    service_uwsgi_config_module: "{{ service.wsgi }}"
+    service_uwsgi_config_tls_backend: "{{ glance_enable_tls_backend | bool }}"
+    service_uwsgi_config_tls_cert: "/etc/glance/certs/glance-cert.pem"
+    service_uwsgi_config_tls_key: "/etc/glance/certs/glance-key.pem"
+    service_uwsgi_config_workers: "{{ glance_api_workers }}"
+    service_uwsgi_config_uid: "glance"
+  when:
+    - service | service_enabled_and_mapped_to_host
+
+- name: Copying over glance-api.conf
+  vars:
+    service: "{{ glance_services['glance-api'] }}"
+  merge_configs:
+    sources:
+      - "{{ role_path }}/templates/glance-api.conf.j2"
+      - "{{ node_custom_config }}/global.conf"
+      - "{{ node_custom_config }}/glance.conf"
+      - "{{ node_custom_config }}/glance/glance-api.conf"
+      - "{{ node_custom_config }}/glance/{{ inventory_hostname }}/glance-api.conf"
+    dest: "{{ node_config_directory }}/glance-api/glance-api.conf"
+    mode: "0660"
+  become: true
+  when: service | service_enabled_and_mapped_to_host
+
+- name: Copying over glance-cache.conf for glance_api
+  vars:
+    service: "{{ glance_services['glance-api'] }}"
+  merge_configs:
+    sources:
+      - "{{ role_path }}/templates/glance-cache.conf.j2"
+      - "{{ node_custom_config }}/glance-cache.conf"
+      - "{{ node_custom_config }}/glance/glance-cache.conf"
+      - "{{ node_custom_config }}/glance/{{ inventory_hostname }}/glance-cache.conf"
+    dest: "{{ node_config_directory }}/glance-api/glance-cache.conf"
+    mode: "0660"
+  become: true
+  when:
+    - service | service_enabled_and_mapped_to_host
+    - enable_glance_image_cache | bool
+
+- name: Copying over glance-image-import.conf
+  vars:
+    service: "{{ glance_services['glance-api'] }}"
+  copy:
+    src: "{{ node_custom_config }}/glance/glance-image-import.conf"
+    dest: "{{ node_config_directory }}/glance-api/glance-image-import.conf"
+    mode: "0660"
+  become: true
+  when:
+    - service | service_enabled_and_mapped_to_host
+    - glance_enable_interoperable_image_import | bool
+
+- name: Copying over property-protections-rules.conf
+  vars:
+    service: "{{ glance_services['glance-api'] }}"
+  copy:
+    src: "{{ node_custom_config }}/glance/property-protections-rules.conf"
+    dest: "{{ node_config_directory }}/glance-api/property-protections-rules.conf"
+    mode: "0660"
+  become: true
+  when:
+    - service | service_enabled_and_mapped_to_host
+    - glance_enable_property_protection | bool
+
+- name: Copying over existing policy file
+  vars:
+    service: "{{ glance_services['glance-api'] }}"
+  template:
+    src: "{{ glance_policy_file_path }}"
+    dest: "{{ node_config_directory }}/glance-api/{{ glance_policy_file }}"
+    mode: "0660"
+  become: true
+  when:
+    - glance_policy_file is defined
+    - service | service_enabled_and_mapped_to_host

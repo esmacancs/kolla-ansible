@@ -1,0 +1,3 @@
+---
+- name: Check kuryr containers
+  import_tasks: check-containers.yml

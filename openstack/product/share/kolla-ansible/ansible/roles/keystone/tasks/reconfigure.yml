@@ -1,0 +1,3 @@
+---
+- name: Deploy keystone
+  import_tasks: deploy.yml

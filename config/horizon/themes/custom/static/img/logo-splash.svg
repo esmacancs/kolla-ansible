@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 120" width="300" height="120">
+  <defs>
+    <linearGradient id="loginGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ff6b35;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#f7931e;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background Circle -->
+  <circle cx="150" cy="60" r="55" fill="url(#loginGradient)" opacity="0.1"/>
+  
+  <!-- Main Cloud -->
+  <path d="M80 70 C60 70, 50 80, 50 90 C50 100, 60 110, 70 110 L230 110 C240 110, 250 100, 250 90 C250 80, 240 70, 230 70 C230 50, 210 30, 190 30 C170 30, 150 40, 140 50 C130 30, 110 20, 90 20 C70 20, 50 30, 40 50 C30 50, 20 55, 20 65 C20 70, 25 70, 30 70 Z" fill="url(#loginGradient)" opacity="0.8"/>
+  
+  <!-- OTECH Logo -->
+  <text x="150" y="75" font-family="Montserrat, sans-serif" font-size="36" font-weight="700" text-anchor="middle" fill="url(#logoGradient)">OTECH</text>
+  
+  <!-- Cloud Particles -->
+  <circle cx="60" cy="40" r="5" fill="#ff6b35" opacity="0.6"/>
+  <circle cx="80" cy="30" r="7" fill="#ff6b35" opacity="0.5"/>
+  <circle cx="70" cy="20" r="5" fill="#ff6b35" opacity="0.7"/>
+  <circle cx="90" cy="40" r="5" fill="#ff6b35" opacity="0.4"/>
+  
+  <circle cx="210" cy="40" r="5" fill="#ff6b35" opacity="0.6"/>
+  <circle cx="230" cy="30" r="7" fill="#ff6b35" opacity="0.5"/>
+  <circle cx="220" cy="20" r="5" fill="#ff6b35" opacity="0.7"/>
+  <circle cx="240" cy="40" r="5" fill="#ff6b35" opacity="0.4"/>
+  
+  <!-- Subtitle -->
+  <text x="150" y="100" font-family="Montserrat, sans-serif" font-size="12" font-weight="400" text-anchor="middle" fill="#2c3e50">CLOUD DASHBOARD</text>
+</svg>

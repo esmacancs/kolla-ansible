@@ -1,0 +1,340 @@
+      nameservers:
+        addresses: [8.8.8.8]
+
+#br-mgmt network on all nodes
+tee -a /etc/hosts<<EOF
+10.8.132.100 controller01
+10.8.132.101 controller02
+10.8.132.102 controller03
+10.8.132.103 computehci01
+10.8.132.104 computehci02
+10.8.132.105 computehci03
+EOF
+
+compute node
+sudo tee -a /etc/hosts<<EOF
+##CEPH_PUB
+10.8.132.162 computehci01
+10.8.132.163 computehci02
+10.8.132.164 computehci03
+10.8.132.165 controller01
+10.8.132.166 controller02
+10.8.132.167 controller03
+
+##CEPH_CLS
+10.8.132.130 computehci01
+10.8.132.131 computehci02
+10.8.132.132 computehci03
+EOF
+
+controllernode
+sudo tee -a /etc/hosts<<EOF
+##CEPH_PUB
+10.8.132.162 computehci01
+10.8.132.163 computehci02
+10.8.132.164 computehci03
+10.8.132.165 controller01
+10.8.132.166 controller02
+10.8.132.167 controller03
+EOF
+
+
+
+Installation Ceph Cluster with Cephadm Utility:
+1. On deployer / Controller1 login as root and configure host on /etc/hosts:
+#tee -a /etc/hosts<<EOF
+### LIST SERVERS FOR CEPH CLUSTER
+10.0.30.10 controller1
+10.0.30.11 controller2
+10.0.30.12 controller3
+10.0.30.13 compute1
+10.0.30.14 compute2
+10.0.30.15 compute3
+10.0.40.10 controller1
+10.0.40.11 controller2
+10.0.40.12 controller3
+10.0.40.13 compute1
+10.0.40.14 compute2
+10.0.40.15 compute3
+EOF
+
+
+
+sudo cp /etc/chrony/chrony.conf /etc/chrony/chrony.conf.bak
+
+
+sudo apt-get update -y; sudo apt-get upgrade -y
+
+
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+sudo apt-get update
+sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y
+
+
+
+wget -q -O- 'https://download.ceph.com/keys/release.asc' | gpg --dearmor -o /etc/apt/trusted.gpg.d/cephadm.gpg
+echo deb https://download.ceph.com/debian-squid/ $(lsb_release -sc) main | sudo tee /etc/apt/sources.list.d/ceph.list
+sudo apt-get update
+sudo apt-cache policy cephadm; sudo apt-get install cephadm -y
+
+
+
+cephadm bootstrap --mon-ip=10.8.132.162 \
+--cluster-network 10.8.132.128/27 \
+--initial-dashboard-password=Admin@12345 \
+--dashboard-password-noupdate \
+--allow-fqdn-hostname | tee cephadm-bootstrap.log
+
+
+
+sudo tee /etc/docker/daemon.json > /dev/null <<EOF
+{
+  "insecure-registries" : ["controller01:4000"]
+}
+EOF
+sudo systemctl daemon-reexec
+sudo systemctl restart docker
+
+
+
+kolla@computehci01:~$ sudo cephadm bootstrap \
+  --mon-ip=10.8.132.162 \
+  --cluster-network 10.8.132.128/27 \
+  --initial-dashboard-password=Admin@12345 \
+  --dashboard-password-noupdate \
+  --allow-fqdn-hostname
+Verifying podman|docker is present...
+Verifying lvm2 is present...
+Verifying time synchronization is in place...
+Unit chrony.service is enabled and running
+Repeating the final host check...
+docker (/usr/bin/docker) is present
+systemctl is present
+lvcreate is present
+Unit chrony.service is enabled and running
+Host looks OK
+Cluster fsid: b21db6cf-160f-11f1-87cc-40a6b7c92e00
+Verifying IP 10.8.132.162 port 3300 ...
+Verifying IP 10.8.132.162 port 6789 ...
+Mon IP `10.8.132.162` is in CIDR network `10.8.132.160/27`
+Mon IP `10.8.132.162` is in CIDR network `10.8.132.160/27`
+Pulling container image quay.io/ceph/ceph:v19...
+Ceph version: ceph version 19.2.3 (c92aebb279828e9c3c1f5d24613efca272649e62) squid (stable)
+Extracting ceph user uid/gid from container image...
+Creating initial keys...
+Creating initial monmap...
+Creating mon...
+Waiting for mon to start...
+Waiting for mon...
+mon is available
+Assimilating anything we can from ceph.conf...
+Generating new minimal ceph.conf...
+Restarting the monitor...
+Setting public_network to 10.8.132.160/27 in mon config section
+Setting cluster_network to 10.8.132.128/27
+Wrote config to /etc/ceph/ceph.conf
+Wrote keyring to /etc/ceph/ceph.client.admin.keyring
+Creating mgr...
+Verifying port 0.0.0.0:9283 ...
+Verifying port 0.0.0.0:8765 ...
+Verifying port 0.0.0.0:8443 ...
+Waiting for mgr to start...
+Waiting for mgr...
+mgr not available, waiting (1/15)...
+mgr not available, waiting (2/15)...
+mgr not available, waiting (3/15)...
+mgr is available
+Enabling cephadm module...
+Waiting for the mgr to restart...
+Waiting for mgr epoch 5...
+mgr epoch 5 is available
+Setting orchestrator backend to cephadm...
+Generating ssh key...
+Wrote public SSH key to /etc/ceph/ceph.pub
+Adding key to root@localhost authorized_keys...
+Adding host computehci01...
+Deploying mon service with default placement...
+Deploying mgr service with default placement...
+Deploying crash service with default placement...
+Deploying ceph-exporter service with default placement...
+Deploying prometheus service with default placement...
+Deploying grafana service with default placement...
+Deploying node-exporter service with default placement...
+Deploying alertmanager service with default placement...
+Enabling the dashboard module...
+Waiting for the mgr to restart...
+Waiting for mgr epoch 9...
+mgr epoch 9 is available
+Generating a dashboard self-signed certificate...
+Creating initial admin user...
+Fetching dashboard port number...
+Ceph Dashboard is now available at:
+
+             URL: https://computehci01:8443/
+            User: admin
+        Password: Admin@12345
+
+Enabling client.admin keyring and conf on hosts with "admin" label
+Saving cluster configuration to /var/lib/ceph/b21db6cf-160f-11f1-87cc-40a6b7c92e00/config directory
+You can access the Ceph CLI as following in case of multi-cluster or non-default config:
+
+        sudo /usr/sbin/cephadm shell --fsid b21db6cf-160f-11f1-87cc-40a6b7c92e00 -c /etc/ceph/ceph.conf -k /etc/ceph/ceph.client.admin.keyring
+
+Or, if you are only running a single cluster on this host:
+
+        sudo /usr/sbin/cephadm shell
+
+Please consider enabling telemetry to help improve Ceph:
+
+        ceph telemetry on
+
+For more information see:
+
+        https://docs.ceph.com/en/latest/mgr/telemetry/
+
+Bootstrap complete.
+kolla@computehci01:~$
+
+
+
+
+ceph auth get-or-create client.glance mon 'allow r' osd 'allow class-read object_prefix rbd_children, allow rwx pool=images' -o /etc/ceph/ceph.client.glance.keyring
+
+ceph auth get-or-create client.cinder mon 'allow r' osd 'allow class-read object_prefix rbd_children, allow rwx pool=volumes, allow rwx pool=images' -o /etc/ceph/ceph.client.cinder.keyring
+
+
+ceph auth get-or-create client.nova mon 'allow r' osd 'allow class-read object_prefix rbd_children, allow rwx pool=vms, allow rx pool=images' -o /etc/ceph/ceph.client.nova.keyring
+
+ceph auth get-or-create client.cinder-backup mon 'allow r' osd 'allow class-read object_prefix rbd_children, allow rwx pool=backups' -o /etc/ceph/ceph.client.cinder-backup.keyring
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+docker images --format "{{.Repository}} {{.Tag}}" | \
+grep quay.io/openstack.kolla | \
+while read repo tag; do
+    newrepo=$(echo $repo | sed 's#quay.io/##')
+    docker tag ${repo}:${tag} controller01:4000/${newrepo}:${tag}
+    docker push controller01:4000/${newrepo}:${tag}
+done
+
+127.0.0.1       localhost
+127.0.1.1 $(hostname).otech.local $(hostname)
+
+# IPv6 entries
+::1     ip6-localhost ip6-loopback
+fe00::0 ip6-localnet
+ff00::0 ip6-mcastprefix
+ff02::1 ip6-allnodes
+ff02::2 ip6-allrouters
+
+# ===============================
+# Management / Internal Network
+# ===============================
+10.8.132.103    computehci01.internal.otech.local computehci01.internal computehci01
+10.8.132.104    computehci02.internal.otech.local computehci02.internal computehci02
+10.8.132.105    computehci03.internal.otech.local computehci03.internal computehci03
+10.8.132.100    controller01.internal.otech.local controller01.internal controller01
+10.8.132.101    controller02.internal.otech.local controller02.internal controller02
+10.8.132.102    controller03.internal.otech.local controller03.internal controller03
+
+# ===============================
+# Public / API Network
+# ===============================
+10.8.132.162    computehci01.public.otech.local computehci01.public computehci01
+10.8.132.163    computehci02.public.otech.local computehci02.public computehci02
+10.8.132.164    computehci03.public.otech.local computehci03.public computehci03
+10.8.132.165    controller01.public.otech.local controller01.public controller01
+10.8.132.166    controller02.public.otech.local controller02.public controller02
+10.8.132.167    controller03.public.otech.local controller03.public controller03
+
+# ===============================
+# Service Network
+# ===============================
+10.8.132.197    computehci01.service.otech.local computehci01.service computehci01
+10.8.132.198    computehci02.service.otech.local computehci02.service computehci02
+10.8.132.199    computehci03.service.otech.local computehci03.service computehci03
+10.8.132.194    controller01.service.otech.local controller01.service controller01
+10.8.132.195    controller02.service.otech.local controller02.service controller02
+10.8.132.196    controller03.service.otech.local controller03.service controller03
+
+# ===============================
+# Ceph Public Network (RBD / API)
+# ===============================
+10.8.132.162    computehci01.ceph-public.otech.local computehci01.ceph-public computehci01
+10.8.132.163    computehci02.ceph-public.otech.local computehci02.ceph-public computehci02
+10.8.132.164    computehci03.ceph-public.otech.local computehci03.ceph-public computehci03
+10.8.132.165    controller01.ceph-public.otech.local controller01.ceph-public controller01
+10.8.132.166    controller02.ceph-public.otech.local controller02.ceph-public controller02
+10.8.132.167    controller03.ceph-public.otech.local controller03.ceph-public controller03
+
+# ===============================
+# Ceph Cluster Network (Replication)
+# ===============================
+10.8.132.130    computehci01.ceph-cls.otech.local computehci01.ceph-cls computehci01
+10.8.132.131    computehci02.ceph-cls.otech.local computehci02.ceph-cls computehci02
+10.8.132.132    computehci03.ceph-cls.otech.local computehci03.ceph-cls computehci03
+
+
+
+
+docker images --format "{{.Repository}} {{.Tag}}" | \
+grep quay.io/openstack.kolla | \
+while read repo tag; do
+    newrepo=$(echo $repo | sed 's#quay.io/##')
+    docker tag ${repo}:${tag} controller01:4000/${newrepo}:${tag}
+    docker push controller01:4000/${newrepo}:${tag}
+done
+
+kolla@controller01:~/openstack$ docker run -d \
+  --network host \
+  --restart=always \
+  --name registry \
+  -e REGISTRY_HTTP_ADDR=0.0.0.0:4000 \
+  -v /opt/registry/data:/var/lib/registry \
+  registry:2
+0ff44c01bfafa01cf2c57c78a280cefe4cf173d2f40c562c5ced76dc71771336
+kolla@controller01:~/openstack$ docker ps
+CONTAINER ID   IMAGE                                     COMMAND                  CREATED             STATUS             PORTS     NAMES
+0ff44c01bfaf   registry:2                                "/entrypoint.sh /etc…"   5 seconds ago       Up 4 seconds                 registry
+ee5e71464d87   af0c5903e901                              "/usr/bin/ceph-mgr -…"   About an hour ago   Up About an hour             ceph-b21db6cf-160f-11f1-87cc-40a6b7c92e00-mgr-controller01-alybvv
+2808c3f033cd   af0c5903e901                              "/usr/bin/ceph-crash…"   About an hour ago   Up About an hour             ceph-b21db6cf-160f-11f1-87cc-40a6b7c92e00-crash-controller01
+e057f8adc0d1   af0c5903e901                              "/usr/bin/ceph-mon -…"   About an hour ago   Up About an hour             ceph-b21db6cf-160f-11f1-87cc-40a6b7c92e00-mon-controller01
+f4553f6dc0df   quay.io/prometheus/node-exporter:v1.7.0   "/bin/node_exporter …"   About an hour ago   Up About an hour             ceph-b21db6cf-160f-11f1-87cc-40a6b7c92e00-node-exporter-controller01
+248a4f4468c4   af0c5903e901                              "/usr/bin/ceph-expor…"   About an hour ago   Up About an hour             ceph-b21db6cf-160f-11f1-87cc-40a6b7c92e00-ceph-exporter-controller01
+kolla@controller01:~/openstack$ curl http://localhost:4000/v2/
+{}kolla@controller01:~/openstack$
+
+kolla@controller01:~/openstack$ cat /etc/docker/daemon.json
+{
+    "bridge": "none",
+    "insecure-registries": [
+        "controller01:4000"
+    ],
+    "ip-forward": false,
+    "iptables": false,
+    "log-opts": {
+        "max-file": "5",
+        "max-size": "50m"
+    }

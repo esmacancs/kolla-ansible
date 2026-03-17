@@ -1,0 +1,111 @@
+# OTECH Cloud Custom Theme Configuration
+name: "OTECH Theme"
+display_name: "OTECH Cloud Theme"
+version: "1.0.0"
+description: "Modern OTECH Cloud branding theme with gradient design and enhanced UX"
+
+# Theme Metadata
+author: "OTECH Solutions"
+license: "MIT"
+homepage: "https://otech.local"
+tags: ["modern", "gradient", "corporate", "responsive"]
+
+# Theme Settings
+settings:
+  # Color Palette
+  primary_color: "#ff6b35"
+  secondary_color: "#2a5298"
+  accent_color: "#3498db"
+  success_color: "#27ae60"
+  warning_color: "#f39c12"
+  danger_color: "#e74c3c"
+  info_color: "#3498db"
+  light_color: "#ecf0f1"
+  dark_color: "#2c3e50"
+  
+  # Typography
+  font_family: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
+  heading_font: "'Montserrat', sans-serif"
+  monospace_font: "'Fira Code', 'Courier New', monospace"
+  
+  # Layout
+  navbar_height: "60px"
+  sidebar_width: "250px"
+  footer_height: "50px"
+  
+  # Effects
+  border_radius: "8px"
+  box_shadow: "0 4px 15px rgba(0,0,0,0.1)"
+  transition_speed: "0.3s"
+  
+  # Responsive Breakpoints
+  mobile_breakpoint: "768px"
+  tablet_breakpoint: "1024px"
+  desktop_breakpoint: "1200px"
+
+# Theme Features
+features:
+  - "gradient_navigation"
+  - "custom_icons"
+  - "enhanced_forms"
+  - "responsive_design"
+  - "dark_mode_support"
+  - "loading_animations"
+  - "keyboard_shortcuts"
+  - "error_handling"
+  - "performance_monitoring"
+
+# Custom Components
+components:
+  navbar:
+    background: "linear-gradient(135deg, #1e3c72 0%, #2a5298 100%)"
+    text_color: "#ffffff"
+    border_bottom: "3px solid #ff6b35"
+    logo_size: "32x32"
+    
+  sidebar:
+    background: "linear-gradient(180deg, #2c3e50 0%, #34495e 100%)"
+    text_color: "#ecf0f1"
+    active_background: "#ff6b35"
+    hover_background: "#34495e"
+    
+  login_page:
+    background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
+    panel_radius: "10px"
+    panel_shadow: "0 10px 30px rgba(0,0,0,0.3)"
+    
+  dashboard:
+    card_radius: "8px"
+    card_shadow: "0 4px 15px rgba(0,0,0,0.1)"
+    header_background: "linear-gradient(135deg, #3498db 0%, #2980b9 100%)"
+
+# Assets Configuration
+assets:
+  css:
+    - "css/custom.css"
+    - "css/responsive.css"
+    - "css/animations.css"
+    
+  js:
+    - "js/custom.js"
+    - "js/keyboard-shortcuts.js"
+    - "js/performance.js"
+    
+  images:
+    - "img/logo.svg"
+    - "img/login-logo.svg"
+    - "img/favicon.ico"
+    - "img/background.jpg"
+
+# Plugin Support
+plugins:
+  - "enhanced_tables"
+  - "custom_charts"
+  - "real_time_updates"
+  - "advanced_search"
+
+# Compatibility
+compatibility:
+  horizon_versions: ["2025.1", "2024.2", "2023.2"]
+  browsers: ["Chrome 90+", "Firefox 88+", "Safari 14+", "Edge 90+"]
+  mobile: ["iOS 14+", "Android 10+"]

@@ -1,0 +1,3 @@
+---
+- name: Check keystone containers
+  import_tasks: check-containers.yml
